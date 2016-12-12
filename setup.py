@@ -16,7 +16,7 @@ ext_modules = [
     Extension(
         'plyvel._plyvel',
         sources=['plyvel/_plyvel.cpp', 'plyvel/comparator.cpp'],
-        libraries=['leveldb'],
+        libraries=['leveldb', 'snappy'],
         extra_compile_args=['-Wall', '-g'],
     )
 ]

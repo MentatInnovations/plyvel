@@ -146,7 +146,8 @@ cdef int parse_options(Options *options, c_bool create_if_missing,
                        c_bool error_if_exists, object paranoid_checks,
                        object write_buffer_size, object max_open_files,
                        object lru_cache_size, object block_size,
-                       object block_restart_interval, object compression,
+                       object block_restart_interval, object max_file_size,
+					   object compression,
                        int bloom_filter_bits, object comparator,
                        bytes comparator_name) except -1:
     cdef size_t c_lru_cache_size
@@ -173,6 +174,9 @@ cdef int parse_options(Options *options, c_bool create_if_missing,
 
     if block_restart_interval is not None:
         options.block_restart_interval = block_restart_interval
+	
+    if max_file_size is not None:
+        options.max_file_size = max_file_size
 
     if compression is None:
         options.compression = leveldb.kNoCompression
@@ -218,7 +222,8 @@ cdef class DB:
                  bool error_if_exists=False, paranoid_checks=None,
                  write_buffer_size=None, max_open_files=None,
                  lru_cache_size=None, block_size=None,
-                 block_restart_interval=None, compression='snappy',
+                 block_restart_interval=None, max_file_size=None, 
+				 compression='snappy',
                  int bloom_filter_bits=0, object comparator=None,
                  bytes comparator_name=None):
         cdef Status st
@@ -229,7 +234,7 @@ cdef class DB:
         parse_options(
             &self.options, create_if_missing, error_if_exists, paranoid_checks,
             write_buffer_size, max_open_files, lru_cache_size, block_size,
-            block_restart_interval, compression, bloom_filter_bits, comparator,
+            block_restart_interval, max_file_size, compression, bloom_filter_bits, comparator,
             comparator_name)
         with nogil:
             st = leveldb.DB_Open(self.options, fsname, &self._db)
@@ -498,7 +503,8 @@ cdef class PrefixedDB:
 
 def repair_db(name, *, paranoid_checks=None, write_buffer_size=None,
               max_open_files=None, lru_cache_size=None, block_size=None,
-              block_restart_interval=None, compression='snappy',
+              block_restart_interval=None, max_file_size=None,
+              compression='snappy',
               int bloom_filter_bits=0, comparator=None,
               bytes comparator_name=None):
     cdef Options options = Options()
@@ -511,7 +517,7 @@ def repair_db(name, *, paranoid_checks=None, write_buffer_size=None,
     parse_options(
         &options, create_if_missing, error_if_exists, paranoid_checks,
         write_buffer_size, max_open_files, lru_cache_size, block_size,
-        block_restart_interval, compression, bloom_filter_bits, comparator,
+        block_restart_interval, max_file_size, compression, bloom_filter_bits, comparator,
         comparator_name)
     with nogil:
         st = RepairDB(fsname, options)

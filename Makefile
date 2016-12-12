@@ -16,14 +16,14 @@ ext: cython
 	@echo "Building extension"
 	@echo "=================="
 	@echo
-	python setup.py build_ext --inplace --force
+	python3 setup.py build_ext --inplace --force
 
 doc:
 	@echo
 	@echo "Building documentation"
 	@echo "======================"
 	@echo
-	python setup.py build_sphinx
+	python3 setup.py build_sphinx
 	@echo
 	@echo Generated documentation: "file://"$$(readlink -f doc/build/html/index.html)
 	@echo
